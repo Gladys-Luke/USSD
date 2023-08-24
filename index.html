@@ -1,106 +1,144 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Bank USSD Transaction</title>
-    <script type="text/javascript">
-      var accountBalance = 5000; // Example account balance, you can set your own initial balance
+<head>
+  <title>Bank USSD Transaction</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
 
-      
-        var ussdCode = prompt("Enter USSD code:");
-        var response;
+    .app-container {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: 300px;
+    }
 
-        if (ussdCode === "*737#") {
-          var options = prompt(
-            "1. Airtime-Self\n2. Airtime-Others\n3. Data\n4. Trsf-GTB\n5. Trsf-Others\n6. Trsf-MFB/eWallet\n7. Quick Transfer\n8. Pay Bills\n9. Check Balance"
-          );
+    .app-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-align: center;
+    }
 
-          if (options === "1") {
-            var amount = prompt("Please enter amount");
-            response = "Recharged ₦" + amount + " successfully";
-          } else if (options === "4") {
-            var recipientAccount = prompt("Enter recipient's GTB account number:");
+    .input-label {
+      font-weight: bold;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .response {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f5f5f5;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="app-title">GTB App</div>
+    <label class="input-label">Enter USSD code:</label>
+    <input class="input-field" id="ussdCode" type="text" />
+    <button class="button" onclick="handleUSSD()">Submit</button>
+    <div class="response" id="response"></div>
+  </div>
+
+  <script>
+    function handleUSSD() {
+      var accountBalance = 5000;
+      var ussdCodeInput = document.getElementById('ussdCode');
+      var responseElement = document.getElementById('response');
+      var ussdCode = ussdCodeInput.value.trim();
+      var response = '';
+
+      if (ussdCode === "*737#") {
+        var options = prompt("1. Airtime-Self\n2. Airtime-Others\n3. Data\n4. Trsf-GTB\n5. Trsf-Others\n6. Trsf-MFB/eWallet\n7. Quick Transfer\n8. Pay Bills\n9. Check Balance");
+
+        if (options === "1") {
+          var amount = prompt("Please enter amount");
+          response = "Recharged ₦" + amount + " successfully";
+        } else if (options === "4") {
+          var recipientAccount = prompt("Enter recipient's GTB account number:");
+          var amount = prompt("Enter amount to transfer:");
+          if (amount > accountBalance) {
+            response = "Error: Insufficient account balance";
+          } else {
+            accountBalance -= amount;
+            response = "Transferred ₦" + amount + " to GTB account " + recipientAccount + " successfully";
+          }
+        } else if (options === "9") {
+          response = "Your account balance is ₦" + accountBalance;
+        } else if (options === "5") {
+          var bankOptions = prompt("Select a bank to transfer to:\n1. Zenith Bank\n2. Access Bank\n3. First Bank\n4. UBA\n5. Stanbic IBTC");
+
+          if (bankOptions === "1" || bankOptions === "2" || bankOptions === "3" || bankOptions === "4" || bankOptions === "5") {
+            var bankName;
+            switch (bankOptions) {
+              case "1":
+                bankName = "Zenith Bank";
+                break;
+              case "2":
+                bankName = "Access Bank";
+                break;
+              case "3":
+                bankName = "First Bank";
+                break;
+              case "4":
+                bankName = "UBA";
+                break;
+              case "5":
+                bankName = "Stanbic IBTC";
+                break;
+            }
+            var recipientAccount = prompt("Enter recipient's " + bankName + " account number:");
             var amount = prompt("Enter amount to transfer:");
             if (amount > accountBalance) {
               response = "Error: Insufficient account balance";
             } else {
               accountBalance -= amount;
-              response = "Transferred ₦" + amount + " to GTB account " + recipientAccount + " successfully";
-            }
-          } else if (options === "9") {
-            response = "Your account balance is ₦" + accountBalance;
-          
-          } else if (options === "5") {
-            var bankOptions = prompt(
-              "Select a bank to transfer to:\n1. Zenith Bank\n2. Access Bank\n3. First Bank\n4. UBA\n5. Stanbic IBTC"
-            );
-
-            if (bankOptions === "1") {
-              var recipientAccount = prompt("Enter recipient's Zenith Bank account number:");
-              var amount = prompt("Enter amount to transfer:");
-              if (amount > accountBalance) {
-                response = "Error: Insufficient account balance";
-              } else {
-                accountBalance -= amount;
-                response = "Transferred ₦" + amount + " to Mr. Kenny " + " successfully. Your remaining balance is ₦" + accountBalance;
-              }
-            } else if (bankOptions === "2") {
-              var recipientAccount = prompt("Enter recipient's Access Bank account number:");
-              var amount = prompt("Enter amount to transfer:");
-              if (amount > accountBalance) {
-                response = "Error: Insufficient account balance";
-              } else {
-                accountBalance -= amount;
-                response = "Transferred ₦" + amount + " to Mr. Kenny " + " successfully. Your remaining balance is ₦" + accountBalance;
-
-              }
-            } else if (bankOptions === "3") {
-              var recipientAccount = prompt("Enter recipient's First Bank account number:");
-              var amount = prompt("Enter amount to transfer:");
-              if (amount > accountBalance) {
-                response = "Error: Insufficient account balance";
-              } else {
-                accountBalance -= amount;
-                response = "Transferred ₦" + amount + " to Mr. Kenny " + " successfully. Your remaining balance is ₦" + accountBalance;
-
-              }
-            } else if (bankOptions === "4") {
-              var recipientAccount = prompt("Enter recipient's UBA Bank account number:");
-              var amount = prompt("Enter amount to transfer:");
-              if (amount > accountBalance) {
-                response = "Error: Insufficient account balance";
-              } else {
-                accountBalance -= amount;
-                response = "Transferred ₦" + amount + " to Mr. Kenny " + " successfully. Your remaining balance is ₦" + accountBalance;
-
-              }
-            } else if (bankOptions === "5") {
-              var recipientAccount = prompt("Enter recipient's Stanbic IBTC account number:");
-              var amount = prompt("Enter amount to transfer:");
-              if (amount > accountBalance) {
-                response = "Error: Insufficient account balance";
-              } else {
-                accountBalance -= amount;
-                response = "Transferred ₦" + amount + " to Mr. Kenny " + " successfully";
-              }
-             
-            } else {
-              response = "Invalid bank selection";
+              response = "Transferred ₦" + amount + " to Mr. Kenny successfully. Your remaining balance is ₦" + accountBalance;
             }
           } else {
-            response = "Invalid option";
+            response = "Invalid bank selection";
           }
-        } else if (ussdCode === "3") {
-          response = "Exiting...";
         } else {
-          response = "Invalid USSD code";
+          response = "Invalid option";
         }
+      } else if (ussdCode === "3") {
+        response = "Exiting...";
+      } else {
+        response = "Invalid USSD code";
+      }
 
-        // Display response
-        alert(response);
-     
-    </script>
-  </head>
-  <body>
-    
-  </body>
+      // Display response
+      responseElement.textContent = response;
+    }
+  </script>
+</body>
 </html>
